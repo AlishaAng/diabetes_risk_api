@@ -48,12 +48,25 @@ if submitted:
             pred = int(result["prediction"])
 
             st.subheader("Result")
-            st.metric("Predicted probability", f"{prob:.1%}")
 
+            # Colour-coded headline
             if pred == 1:
-                st.error("Prediction: Higher risk (model output = 1)")
+                st.error(f"Higher risk , {prob:.1%} predicted probability")
             else:
-                st.success("Prediction: Lower risk (model output = 0)")
+                st.success(f"Lower risk , {prob:.1%} predicted probability")
+
+            # Progress bar (nice visual cue)
+            st.progress(min(max(prob, 0.0), 1.0))
+
+            # Add a simple risk label (more granular than 0/1)
+            if prob < 0.2:
+                st.info("Risk level: Very low")
+            elif prob < 0.4:
+                st.info("Risk level: Low–moderate")
+            elif prob < 0.6:
+                st.warning("Risk level: Moderate–high")
+            else:
+                st.warning("Risk level: High")
 
             with st.expander("See request/response"):
                 st.json({"request": payload, "response": result})
