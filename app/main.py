@@ -4,20 +4,23 @@ from fastapi import FastAPI
 from app.schema import PatientData
 from app.service import predict_diabetes
 
-app = FastAPI(title="Pima Diabetes API") #sets up the web server
+app = FastAPI(
+    title="Diabetes Risk Prediction API",
+    description="Predicts the probability of diabetes using a trained ML model",
+    version="1.0.0"
+)
 
 # Health check endpoint
-@app.get("/")
+@app.get("/", include_in_schema=False)
 def health():
-    return {"status": "ok"} #useful for confirming the API is running 
+    return {"status": "ok"}  #useful for confirming the API is running 
 
 # Prediction endpoint
-@app.post("/predict")
+@app.post(
+    "/predict",
+    tags=["Prediction"],
+    summary="Predict diabetes risk",
+    description="Returns the probability of diabetes and a binary prediction"
+)
 def predict(data: PatientData):
-    """
-    Accepts a PatientData JSON payload and returns
-    probability + binary prediction.
-    """
-    result = predict_diabetes(data)
-    return result
-
+    return predict_diabetes(data)

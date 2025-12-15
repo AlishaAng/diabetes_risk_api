@@ -39,7 +39,8 @@ def predict_diabetes(data):
     # Convert to float for JSON serialisation
     return {
         "probability": float(proba),
-        "prediction": pred }
-
+        "prediction": pred,
+        "risk_level": "high" if pred == 1 else "low"
+    }
 
 
