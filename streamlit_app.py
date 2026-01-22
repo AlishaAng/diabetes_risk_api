@@ -2,7 +2,8 @@ import os
 import requests
 import streamlit as st
 
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000")
+PREDICT_URL = f"{API_URL.rstrip('/')}/predict"
 
 def explain_inputs(payload: dict) -> list[str]:
     reasons = []
@@ -70,7 +71,7 @@ if submitted:
 
     try:
         with st.spinner("Calculating…"):
-            resp = requests.post(API_URL, json=payload, timeout=10)
+            resp = requests.post(PREDICT_URL, json=payload, timeout=10)
 
         if resp.status_code != 200:
             st.error(f"API error {resp.status_code}: {resp.text}")

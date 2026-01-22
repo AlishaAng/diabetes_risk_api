@@ -62,3 +62,5 @@ Terminal 2 – start the UI
 streamlit run streamlit_app.py
 ```
 Then open http://localhost:8501
+
+### API docs available at http://localhost:8000/docs
