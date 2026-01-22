@@ -2,9 +2,9 @@
 
 This project is a machine learning–powered diabetes risk prediction application, consisting of:
 
-- a FastAPI backend that serves a trained classification model via a REST API
+- a FastAPI backend that uses a trained classification model 
 
-- a Streamlit frontend that allows users to input clinical measurements and receive an interpretable risk estimate
+- a Streamlit frontend that allows users to input clinical measurements and receive a risk estimate
 
 The goal of the project is to demonstrate end-to-end data science and deployment skills, including data preprocessing, model training, API design, user interface development, and containerisation.
 
@@ -20,21 +20,21 @@ Key characteristics of the dataset:
 
 - All patients are of Pima Indian heritage
 
-- Each record contains physiological measurements such as glucose, BMI, blood pressure, insulin, and age
+- Each record contains measurements such as glucose, BMI, blood pressure, insulin, and age
 
 - The target variable indicates whether the patient was diagnosed with diabetes
 
-Because of these constraints, the dataset represents a very specific population and is not demographically generalisable.
+This dataset represents a very specific population and is not demographically generalisable.
 
 ## Important disclaimer
 
 ⚠️ This project is not a medical tool.
 
-The model is not intended for clinical use
+The model is not intended for clinical use.
 
-Predictions should not be interpreted as medical advice, diagnosis, or treatment guidance
+Predictions should not be interpreted as medical advice or diagnosis.
 
-The application is designed solely for educational and demonstration purposes
+The application is designed solely for educational and demonstration purposes.
 
 
 ## Running the project locally
