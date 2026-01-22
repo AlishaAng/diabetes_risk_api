@@ -1,12 +1,42 @@
+import os
 import requests
 import streamlit as st
 
-API_URL = "http://127.0.0.1:8000/predict" #sends a request to the API endpoint
+API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/predict")
+
+def explain_inputs(payload: dict) -> list[str]:
+    reasons = []
+
+    if payload["Glucose"] >= 140:
+        reasons.append("Glucose is high (≥140), which strongly increases risk.")
+    elif payload["Glucose"] >= 110:
+        reasons.append("Glucose is elevated (110–139), which increases risk.")
+
+    if payload["BMI"] >= 30:
+        reasons.append("BMI is in the obese range (≥30), which increases risk.")
+    elif payload["BMI"] >= 25:
+        reasons.append("BMI is above the healthy range (≥25), which can increase risk.")
+
+    if payload["Age"] >= 35:
+        reasons.append("Age is 35+, which increases baseline risk.")
+
+    if payload["DiabetesPedigreeFunction"] >= 0.8:
+        reasons.append("Family-history proxy (DPF) is relatively high, increasing risk.")
+
+    if payload["BloodPressure"] >= 90:
+        reasons.append("Blood pressure is high (≥90 diastolic), which can correlate with metabolic risk.")
+
+    if not reasons:
+        reasons.append("No obvious high-risk signals based on typical cut-offs — risk may be driven by combinations of factors.")
+
+    return reasons
+
 
 st.set_page_config(page_title="Diabetes Risk Checker", page_icon="🩺", layout="centered")
 
 st.title("🩺 Diabetes Risk Checker")
 st.write("Enter patient measurements to estimate diabetes risk.")
+
 
 with st.form("risk_form"):
     col1, col2 = st.columns(2)
@@ -25,6 +55,7 @@ with st.form("risk_form"):
 
     submitted = st.form_submit_button("Predict risk")
 
+
 if submitted:
     payload = {
         "Pregnancies": pregnancies,
@@ -39,37 +70,33 @@ if submitted:
 
     try:
         with st.spinner("Calculating…"):
-            r = requests.post(API_URL, json=payload, timeout=10)
-        if r.status_code != 200:
-            st.error(f"API error {r.status_code}: {r.text}")
+            resp = requests.post(API_URL, json=payload, timeout=10)
+
+        if resp.status_code != 200:
+            st.error(f"API error {resp.status_code}: {resp.text}")
         else:
-            result = r.json()
+            result = resp.json()
             prob = float(result["probability"])
             pred = int(result["prediction"])
 
             st.subheader("Result")
+            st.metric("Predicted probability", f"{prob:.1%}")
 
-            # Colour-coded headline
-            if pred == 1:
-                st.error(f"Higher risk , {prob:.1%} predicted probability")
-            else:
-                st.success(f"Lower risk , {prob:.1%} predicted probability")
-
-            # Progress bar (nice visual cue)
-            st.progress(min(max(prob, 0.0), 1.0))
-
-            # Add a simple risk label (more granular than 0/1)
+            # Clear colour-coded interpretation
             if prob < 0.2:
-                st.info("Risk level: Very low")
+                st.success("Risk level: Very low")
             elif prob < 0.4:
                 st.info("Risk level: Low–moderate")
             elif prob < 0.6:
                 st.warning("Risk level: Moderate–high")
             else:
-                st.warning("Risk level: High")
+                st.error("Risk level: High")
 
-            with st.expander("See request/response"):
-                st.json({"request": payload, "response": result})
+        with st.expander("Why this result? (risk explanation)"):
+            reasons = explain_inputs(payload)
+            for reason in reasons[:5]:
+                st.write("• " + reason)
+            st.caption("Note: this explanation is based on common clinical cut-offs, not a guaranteed model attribution")
 
     except requests.exceptions.RequestException as e:
-        st.error(f"Could not reach the API at {API_URL}. Is Uvicorn running?\n\n{e}")
+        st.error(f"Could not reach the API at {API_URL}. Is the API container running?\n\n{e}")
