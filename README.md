@@ -1,6 +1,6 @@
 ## Project overview
 
-![Diabetes risk prediction app](assets/webpage.png)
+<img src="assets/webpage.png" alt="Diabetes risk prediction app" width="600"/>
 
 This project is a machine learning–powered diabetes risk prediction application, consisting of:
 
