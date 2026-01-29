@@ -1,5 +1,7 @@
 ## Project overview
 
+![Diabetes risk prediction app](assets/webpage.png)
+
 This project is a machine learning–powered diabetes risk prediction application, consisting of:
 
 - a FastAPI backend that uses a trained classification model 
